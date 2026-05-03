@@ -1,0 +1,14 @@
+# Dossier de build
+build/
+
+# Fichiers compilés
+*.o
+*.out
+*.exe
+
+# Fichiers temporaires
+*.log
+*.tmp
+
+# Fichiers générés par l’éditeur
+.vscode/
