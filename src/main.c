@@ -19,25 +19,6 @@ int main() {
   printf("n=%d phi=%d\n", n, phi);
   printf("e=%d d=%d\n\n", e, d);
 
-  // Test de chiffrement avec un entier
-  int message = 2026;
-
-  // Vérifier que le message est inférieur à n
-  if (message >= n) {
-    printf("Erreur: message (%d) >= n (%d)\n", message, n);
-    return 1;
-  }
-
-  // Chiffrement et déchiffrement
-  long long c = chiffrer(message, e, n);
-  long long m = dechiffrer(c, d, n);
-
-  // Affichage des résultats
-  printf("=== TEST ENTIER ===\n");
-  printf("Message=%d\n", message);
-  printf("Chiffre=%lld\n", c);
-  printf("Dechiffre=%lld\n\n", m);
-
   // Test de chiffrement sur un fichier
   printf("=== TEST FICHIER ===\n");
 
