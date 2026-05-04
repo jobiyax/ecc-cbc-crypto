@@ -12,3 +12,7 @@ build/
 
 # Fichiers générés par l’éditeur
 .vscode/
+
+# Ignorer les fichiers texte et binaires
+*.txt
+*.bin
