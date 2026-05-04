@@ -91,12 +91,26 @@ void dechiffrer_dossier(const char *path, int d, int n) {
       if (!strstr(entry->d_name, IGNORE_EXT_BIN))
         continue;
 
-      // Créer le fichier de sortie
-      snprintf(output_path, sizeof(output_path), "%s.dec", input_path);
+      // Copier le nom et retirer .bin
+      strncpy(output_path, input_path, sizeof(output_path));
+      output_path[sizeof(output_path) - 1] = '\0';
 
-      // Déchiffrer le fichier
+      // Enlever ".bin"
+      char *ext = strstr(output_path, IGNORE_EXT_BIN);
+      if (ext) {
+        *ext = '\0';
+      }
+
+      // Déchiffrement vers fichier original
       dechiffrer_fichier(input_path, output_path, d, n);
       printf("Dechiffre: %s -> %s\n", input_path, output_path);
+
+      // Supprimer le fichier .bin
+      if (remove(input_path) == 0) {
+        printf("Supprime chiffre: %s\n", input_path);
+      } else {
+        perror("Erreur suppression");
+      }
     }
   }
 
