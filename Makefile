@@ -1,17 +1,20 @@
-CC = gcc                # Compilateur utilisé
-CFLAGS = -Iinclude      # Dossier des fichiers d'en-tête (.h)
+CC = gcc                # compilateur utilisé
+CFLAGS = -Iinclude      # dossier des fichiers d'en-tête (.h)
 
-SRC = src/main.c src/rsa.c src/utils.c   # Fichiers source
-OUT = build/rsa                          # Nom de l'exécutable
+# Fichiers source du projet
+SRC = src/main.c \
+      src/rsa_core.c \
+      src/file_crypto.c \
+      src/folder_crypto.c \
+      src/utils.c
+
+# Nom de l'exécutable
+OUT = build/rsa
 
 # Compilation du projet
 all:
 	mkdir -p build
 	$(CC) $(SRC) $(CFLAGS) -o $(OUT)
-
-# Compile et lance le programme
-run: all
-	./$(OUT)
 
 # Supprime les fichiers générés
 clean:
