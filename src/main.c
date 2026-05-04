@@ -19,19 +19,23 @@ int main() {
   printf("n=%d phi=%d\n", n, phi);
   printf("e=%d d=%d\n\n", e, d);
 
-  // Test de chiffrement sur un fichier
-  printf("=== TEST FICHIER ===\n");
+  // Vérification importante pour les fichiers (chaque octet < 256)
+  if (n <= 255) {
+    printf("Erreur: n doit etre > 255 pour chiffrer des fichiers\n");
+    return 1;
+  }
 
-  // Chiffrement du fichier
-  chiffrer_fichier("message.txt", "chiffre.bin", e, n);
-  printf("Fichier chiffre -> chiffre.bin\n");
+  // Dossier courant
+  const char *dossier = ".";
 
-  // Déchiffrement du fichier
-  dechiffrer_fichier("chiffre.bin", "dechiffre.txt", d, n);
-  printf("Fichier dechiffre -> dechiffre.txt\n");
+  printf("=== CHIFFREMENT DOSSIER ===\n");
+  chiffrer_dossier(dossier, e, n);
+
+  printf("\n=== DECHIFFREMENT DOSSIER ===\n");
+  dechiffrer_dossier(dossier, d, n);
 
   // Fin du programme
-  printf("Operation terminee !\n");
+  printf("\nOperation terminee !\n");
 
   return 0;
 }
