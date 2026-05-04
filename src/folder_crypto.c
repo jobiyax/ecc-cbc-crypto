@@ -45,6 +45,13 @@ void chiffrer_dossier(const char *path, int e, int n) {
       // Chiffrer le fichier
       chiffrer_fichier(input_path, output_path, e, n);
       printf("Chiffre: %s -> %s\n", input_path, output_path);
+
+      // Supprimer le fichier original
+      if (remove(input_path) == 0) {
+        printf("Supprime original: %s\n", input_path);
+      } else {
+        perror("Erreur suppression");
+      }
     }
   }
 
