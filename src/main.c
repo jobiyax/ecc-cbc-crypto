@@ -24,38 +24,31 @@ int main() {
   printf("n=%d phi=%d\n", n, phi);
   printf("e=%d d=%d\n\n", e, d);
 
-  // Vérification que n est assez grand pour chiffrer des octets
+  // Vérification que n est assez grand
   if (n <= 255) {
     printf("Erreur: n doit etre > 255\n");
     return 1;
   }
 
-  // Variable pour le choix utilisateur
-  int choix;
-
-  // Dossier courant
   const char *dossier = ".";
 
-  // Menu principal en boucle infinie
+  printf("\n=== CHIFFREMENT AUTOMATIQUE ===\n");
+  chiffrer_dossier(dossier, e, n);
+
+  int choix;
+
+  // Menu simplifié
   while (1) {
-    printf("\n=== MENU RSA ===\n");
-    printf("1. Chiffrer un dossier\n");
-    printf("2. Dechiffrer un dossier\n");
-    printf("3. Quitter\n");
+    printf("\n=== MENU ===\n");
+    printf("1. Dechiffrer le dossier\n");
+    printf("2. Quitter\n");
     printf("Choix : ");
 
-    // Lecture du choix utilisateur
     scanf("%d", &choix);
 
-    // Gestion des choix utilisateur
     switch (choix) {
 
     case 1:
-      printf("\n=== CHIFFREMENT ===\n");
-      chiffrer_dossier(dossier, e, n);
-      break;
-
-    case 2:
       printf("\n=== DECHIFFREMENT ===\n");
       dechiffrer_dossier(dossier, d, n);
 
@@ -64,7 +57,7 @@ int main() {
 
       return 0;
 
-    case 3:
+    case 2:
       printf("Au revoir !\n");
       return 0;
 
