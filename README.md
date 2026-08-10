@@ -36,3 +36,7 @@ Toutes les explications, les concepts et l'exemple de A à Z sont détaillés da
 | 2   | L'échange de clé ECDH    | [02-ecdh.md](docs/02-ecdh.md)       |
 | 3   | Le mode CBC              | [03-cbc.md](docs/03-cbc.md)         |
 | 4   | Exemple complet de A à Z | [04-exemple.md](docs/04-exemple.md) |
+
+## Licence
+
+Distribué sous licence MIT. Voir [LICENSE](LICENSE).
