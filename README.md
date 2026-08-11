@@ -1,19 +1,52 @@
 <p align="center">
-  <img src="ecc-cbc-crypto.webp" width="300">
+  <img src="assets/banner.webp" width="200">
 </p>
 
-## Description
+<p align="center">
+  Cryptosystème hybride échange de clé ECDH sur courbe elliptique puis chiffrement symétrique en mode CBC en Python pur
+</p>
 
-Un **cryptosystème hybride** : les courbes elliptiques (ECC) permettent d'échanger une clé secrète en toute sécurité, et le mode CBC utilise ensuite cette clé pour chiffrer le texte.
+<p align="center">
+  <img src="https://img.shields.io/badge/python-3.14-inactive?style=flat-square" alt="Python 3.14">
+  <img src="https://img.shields.io/badge/deps-pydantic-inactive?style=flat-square" alt="Pydantic">
+  <img src="https://img.shields.io/badge/license-MIT-inactive?style=flat-square" alt="Licence MIT">
+  <img src="https://img.shields.io/badge/tests-37%20passing-inactive?style=flat-square" alt="37 tests">
+</p>
+
+## Sommaire
+
+- [Fonctionnalités](#fonctionnalités)
+  - [Documentation](#documentation)
+  - [Schéma d'ensemble](#schéma-densemble)
+- [Installation](#installation)
+  - [Prérequis](#prérequis)
+  - [Clonage et dépendances](#clonage-et-dépendances)
+- [Utilisation](#utilisation)
+  - [Tests](#tests)
+  - [Qualité du code](#qualité-du-code)
+- [Licence](#licence)
 
 ## Fonctionnalités
 
-- Échange de clé sécurisé (ECDH) sur courbe elliptique
-- Chiffrement symétrique en mode CBC, bloc par bloc
-- Exemple pédagogique complet avec calculs numériques vérifiables (courbe $p = 23$, message « BONJOUR »)
-- Diagrammes Mermaid et formules LaTeX
+- Échange de clé sécurisé (ECDH) sur courbe elliptique, pas à pas
+- Chiffrement symétrique en mode CBC, bloc par bloc (padding PKCS#7)
+- Saisie de **texte libre** (lettres, chiffres, caractères spéciaux, espaces compris)
+- Exemple complet avec calculs numériques vérifiables
+- Affichage détaillé des 9 étapes (binaire, XOR, blocs, IV)
+- Vérification automatique par déchiffrement à la fin
 
-## Schéma d'ensemble
+### Documentation
+
+Toutes les explications, les concepts et l'exemple de A à Z sont détaillés dans le dossier [`docs/`](docs/)
+
+| #   | Sujet                    | Lien                                |
+| --- | ------------------------ | ----------------------------------- |
+| 1   | Les courbes elliptiques  | [01-ecc.md](docs/01-ecc.md)         |
+| 2   | L'échange de clé ECDH    | [02-ecdh.md](docs/02-ecdh.md)       |
+| 3   | Le mode CBC              | [03-cbc.md](docs/03-cbc.md)         |
+| 4   | Exemple complet de A à Z | [04-exemple.md](docs/04-exemple.md) |
+
+### Schéma d'ensemble
 
 ```mermaid
 flowchart LR
@@ -26,16 +59,60 @@ flowchart LR
     K --> CBC
 ```
 
-## Documentation
+## Installation
 
-Toutes les explications, les concepts et l'exemple de A à Z sont détaillés dans le dossier [`docs/`](docs/) :
+### Prérequis
 
-| #   | Sujet                    | Lien                                |
-| --- | ------------------------ | ----------------------------------- |
-| 1   | Les courbes elliptiques  | [01-ecc.md](docs/01-ecc.md)         |
-| 2   | L'échange de clé ECDH    | [02-ecdh.md](docs/02-ecdh.md)       |
-| 3   | Le mode CBC              | [03-cbc.md](docs/03-cbc.md)         |
-| 4   | Exemple complet de A à Z | [04-exemple.md](docs/04-exemple.md) |
+- Python 3.14 ou plus
+- [uv](https://docs.astral.sh/uv/) (gestionnaire de paquets et d'environnement)
+
+Vérifier
+
+```bash
+python --version
+uv --version
+```
+
+### Clonage et dépendances
+
+```bash
+git clone https://github.com/jobiyax/ecc-cbc-crypto.git
+cd ecc-cbc-crypto
+uv sync  # installe les dépendances + dépendances de dev dans .venv
+```
+
+> Sans uv, utilisez `python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"`
+
+## Utilisation
+
+Lancez le programme
+
+```bash
+uv run python src/main.py
+```
+
+Le CLI vous demande successivement
+
+1. `dA` (clé privée d'Alice)
+2. `dB` (clé privée de Bob)
+3. Le **texte à chiffrer** (texte, chiffres, accents, emojis, espaces…)
+4. La personnalisation de `p/a/b` et de la taille de bloc _(optionnel)_
+
+Chaque champ affiche sa valeur par défaut entre crochets. **Entrée** la valide.
+
+### Tests
+
+```bash
+uv run pytest  # lance toute la suite
+uv run pytest -v  # avec le détail de chaque test
+```
+
+### Qualité du code
+
+```bash
+uv run ruff check .  # lint (vérifie le style et les erreurs)
+uv run ruff format .  # format (reformate automatiquement le code)
+```
 
 ## Licence
 
