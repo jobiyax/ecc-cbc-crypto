@@ -79,6 +79,44 @@ def ec_to_cbc_key(secret) -> int:
     return secret.x
 
 
+def prompt_int(name: str) -> int:
+    """Saisit un entier, relance tant que ce n'est pas un entier valide."""
+    while True:
+        raw = input(f"{LABELS[name]} [{DEFAULTS[name]}] : ").strip()
+        if raw == "":
+            return DEFAULTS[name]
+        try:
+            return int(raw)
+        except ValueError:
+            print(f"! {LABELS[name]} : doit être un entier")
+
+
+ERROR_TYPES = {
+    "int_parsing": "doit être un entier",
+    "float_parsing": "doit être un nombre",
+    "string_too_short": "doit contenir au moins {min_length} caractère(s)",
+    "greater_than": "doit être strictement supérieur à {gt}",
+    "greater_than_equal": "doit être supérieur ou égal à {ge}",
+    "less_than": "doit être strictement inférieur à {lt}",
+    "less_than_equal": "doit être inférieur ou égal à {le}",
+    "missing": "est requis",
+    "union_tag_invalid": "valeur invalide",
+}
+
+
+def french_error(error: dict) -> str:
+    """Traduit une erreur pydantic en message français."""
+    etype = error["type"]
+    if etype == "value_error":
+        return error["msg"].removeprefix("Value error, ")
+    field = error["loc"][0] if error["loc"] else "saisie"
+    label = LABELS.get(field, "saisie")
+    template = ERROR_TYPES.get(etype)
+    if template is None:
+        return f"{label} : {error['msg']}"
+    return f"{label} : {template.format(**(error.get('ctx') or {}))}"
+
+
 def ask_payload() -> dict[str, str | int]:
     """Saisit le payload : un texte (t) ou un nombre entier (n)."""
     while True:
@@ -87,8 +125,7 @@ def ask_payload() -> dict[str, str | int]:
             raw = input(f"{LABELS['message']} [{DEFAULTS['message']}] : ").strip()
             return {"message": DEFAULTS["message"] if raw == "" else raw}
         if choice in ("n", "nombre", "number"):
-            raw = input(f"{LABELS['number']} [{DEFAULTS['number']}] : ").strip()
-            return {"number": DEFAULTS["number"] if raw == "" else raw}
+            return {"number": prompt_int("number")}
         print("! saisie invalide : t (texte) ou n (nombre)")
 
 
@@ -104,20 +141,16 @@ def ask_config() -> Config:
     while True:
         values: dict[str, str | int] = {}
         for name in ("dA", "dB"):
-            raw = input(f"{LABELS[name]} [{DEFAULTS[name]}] : ").strip()
-            values[name] = DEFAULTS[name] if raw == "" else raw
+            values[name] = prompt_int(name)
         values.update(ask_payload())
         if ask_advanced():
             for name in ("p", "a", "b", "block_size"):
-                raw = input(f"{LABELS[name]} [{DEFAULTS[name]}] : ").strip()
-                values[name] = DEFAULTS[name] if raw == "" else raw
+                values[name] = prompt_int(name)
         try:
             return Config(**values)
         except ValidationError as exc:
             for error in exc.errors():
-                loc = error["loc"]
-                label = LABELS[loc[0]] if loc else "p"
-                print(f"! {label} : {error['msg']}")
+                print(f"! {french_error(error)}")
             print("Ressaisissez les valeurs.")
 
 

@@ -1,18 +1,51 @@
+import re
+
 import pytest
 from pydantic import ValidationError
 
 from cbc import cbc_decrypt, cbc_encrypt, pad, split_blocks, unpad
 from ecc import ECCurve
 from ecdh import keypair, shared_secret
-from example import (
+from main import (
     Config,
+    ask_config,
     bytes_to_number,
     find_generator,
+    french_error,
     is_prime,
     number_to_bytes,
     order,
     payload_bytes,
 )
+
+ENGLISH = re.compile(
+    r"\b(Input|Value error|greater|less|should|must|field|required)\b", re.IGNORECASE
+)
+
+
+def test_ask_config_retries_on_invalid_input(monkeypatch) -> None:
+    answers = iter(["abc", "5", "7", "n", "xyz", "12345", "n"])
+    monkeypatch.setattr("builtins.input", lambda _: next(answers))
+    cfg = ask_config()
+    assert (cfg.dA, cfg.dB, cfg.number) == (5, 7, 12345)
+
+
+def test_error_messages_are_french() -> None:
+    cases = [
+        {"p": 24, "a": 1, "b": 1, "dA": 5, "dB": 7},
+        {"p": 501, "a": 1, "b": 1, "dA": 5, "dB": 7},
+        {"p": 23, "a": 1, "b": 1, "dA": 0, "dB": 7},
+        {"p": 23, "a": 1, "b": 1, "dA": 5, "dB": 7, "block_size": 0},
+        {"p": 23, "a": 1, "b": 1, "dA": 5, "dB": 7, "number": -1},
+        {"p": 23, "a": 1, "b": 1, "dA": 5, "dB": 7, "message": ""},
+    ]
+    for kwargs in cases:
+        with pytest.raises(ValidationError) as exc:
+            Config(**kwargs)
+        msgs = [french_error(e) for e in exc.value.errors()]
+        assert msgs, "aucune erreur produite"
+        for msg in msgs:
+            assert not ENGLISH.search(msg), f"message en anglais : {msg}"
 
 
 def test_is_prime() -> None:
