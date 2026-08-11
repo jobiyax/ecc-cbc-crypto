@@ -117,16 +117,10 @@ def french_error(error: dict) -> str:
     return f"{label} : {template.format(**(error.get('ctx') or {}))}"
 
 
-def ask_payload() -> dict[str, str | int]:
-    """Saisit le payload : un texte (t) ou un nombre entier (n)."""
-    while True:
-        choice = input("Chiffrer un texte (t) ou un nombre (n) [t] : ").strip().lower()
-        if choice in ("", "t", "texte", "text"):
-            raw = input(f"{LABELS['message']} [{DEFAULTS['message']}] : ").strip()
-            return {"message": DEFAULTS["message"] if raw == "" else raw}
-        if choice in ("n", "nombre", "number"):
-            return {"number": prompt_int("number")}
-        print("! saisie invalide : t (texte) ou n (nombre)")
+def ask_payload() -> dict[str, str]:
+    """Saisit le texte libre : lettres, chiffres, caractères spéciaux, espaces compris."""
+    raw = input(f"{LABELS['message']} [{DEFAULTS['message']}] : ")
+    return {"message": DEFAULTS["message"] if raw == "" else raw}
 
 
 def ask_advanced() -> bool:

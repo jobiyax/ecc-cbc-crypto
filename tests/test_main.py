@@ -9,6 +9,7 @@ from ecdh import keypair, shared_secret
 from main import (
     Config,
     ask_config,
+    ask_payload,
     bytes_to_number,
     find_generator,
     french_error,
@@ -24,10 +25,21 @@ ENGLISH = re.compile(
 
 
 def test_ask_config_retries_on_invalid_input(monkeypatch) -> None:
-    answers = iter(["abc", "5", "7", "n", "xyz", "12345", "n"])
+    answers = iter(["abc", "5", "7", "  Héllo ! @café #123  ", "n"])
     monkeypatch.setattr("builtins.input", lambda _: next(answers))
     cfg = ask_config()
-    assert (cfg.dA, cfg.dB, cfg.number) == (5, 7, 12345)
+    assert (cfg.dA, cfg.dB) == (5, 7)
+    assert cfg.message == "  Héllo ! @café #123  "
+
+
+def test_ask_payload_keeps_special_characters_and_spaces(monkeypatch) -> None:
+    monkeypatch.setattr("builtins.input", lambda _: "  café 123 ! @# [~]  ")
+    assert ask_payload() == {"message": "  café 123 ! @# [~]  "}
+
+
+def test_ask_payload_empty_uses_default(monkeypatch) -> None:
+    monkeypatch.setattr("builtins.input", lambda _: "")
+    assert ask_payload() == {"message": "BONJOUR"}
 
 
 def test_error_messages_are_french() -> None:
