@@ -24,9 +24,19 @@ def test_xor_first_block_with_iv_matches_doc() -> None:
 
 def test_pad_and_split() -> None:
     padded = pad(b"BONJOUR", 4)
-    assert padded == b"BONJOURX"
-    assert split_blocks(padded, 4) == [b"BONJ", b"OURX"]
+    assert padded == b"BONJOUR\x01"
+    assert split_blocks(padded, 4) == [b"BONJ", b"OUR\x01"]
     assert unpad(padded) == b"BONJOUR"
+
+
+def test_pad_full_block_adds_whole_extra_block() -> None:
+    padded = pad(b"BONJ", 4)
+    assert padded == b"BONJ\x04\x04\x04\x04"
+    assert unpad(padded) == b"BONJ"
+
+
+def test_pad_keeps_trailing_x_byte() -> None:
+    assert unpad(pad(b"HELLO X", 4)) == b"HELLO X"
 
 
 def test_shift_cipher_round_trip() -> None:

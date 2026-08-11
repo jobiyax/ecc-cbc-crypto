@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-FILL_BYTE = 0x58
-
 
 def xor_bytes(a: bytes, b: bytes) -> bytes:
     """XOR bit à bit de deux blocs de même taille."""
@@ -14,14 +12,19 @@ def split_blocks(data: bytes, block_size: int) -> list[bytes]:
 
 
 def pad(data: bytes, block_size: int) -> bytes:
-    """Complète le dernier bloc avec le caractère de remplissage 'X' (comme la doc)."""
+    """Padding PKCS#7 : ajoute n octets de valeur n pour compléter le bloc."""
     pad_len = block_size - len(data) % block_size
-    return data + bytes([FILL_BYTE]) * pad_len
+    return data + bytes([pad_len]) * pad_len
 
 
 def unpad(data: bytes) -> bytes:
-    """Retire le remplissage 'X' de fin."""
-    return data.rstrip(bytes([FILL_BYTE]))
+    """Retire le padding PKCS#7 (le dernier octet indique le nombre à retirer)."""
+    if not data:
+        raise ValueError("données vides")
+    pad_len = data[-1]
+    if not 1 <= pad_len <= 16:
+        raise ValueError(f"padding invalide : {pad_len}")
+    return data[:-pad_len]
 
 
 def encrypt_block(key: int, block: bytes) -> bytes:
