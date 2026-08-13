@@ -16,8 +16,8 @@
 ## Sommaire
 
 - [Fonctionnalités](#fonctionnalités)
-  - [Documentation](#documentation)
   - [Schéma d'ensemble](#schéma-densemble)
+- [Documentation](#documentation)
 - [Installation](#installation)
   - [Prérequis](#prérequis)
   - [Clonage et dépendances](#clonage-et-dépendances)
@@ -35,17 +35,6 @@
 - Affichage détaillé des 9 étapes (binaire, XOR, blocs, IV)
 - Vérification automatique par déchiffrement à la fin
 
-### Documentation
-
-Toutes les explications, les concepts et l'exemple de A à Z sont détaillés dans le dossier [`docs/`](docs/)
-
-| #   | Sujet                    | Lien                                |
-| --- | ------------------------ | ----------------------------------- |
-| 1   | Les courbes elliptiques  | [01-ecc.md](docs/01-ecc.md)         |
-| 2   | L'échange de clé ECDH    | [02-ecdh.md](docs/02-ecdh.md)       |
-| 3   | Le mode CBC              | [03-cbc.md](docs/03-cbc.md)         |
-| 4   | Exemple complet de A à Z | [04-exemple.md](docs/04-exemple.md) |
-
 ### Schéma d'ensemble
 
 ```mermaid
@@ -58,6 +47,18 @@ flowchart LR
     end
     K --> CBC
 ```
+
+## Documentation
+
+Toutes les explications, les concepts et l'exemple de A à Z sont détaillés dans le [wiki du projet](https://github.com/jobiyax/ecc-cbc-crypto/wiki).
+
+| #   | Sujet                    | Lien                                                                                              |
+| --- | ------------------------ | ------------------------------------------------------------------------------------------------- |
+| 0   | Accueil                  | [Home](https://github.com/jobiyax/ecc-cbc-crypto/wiki)                                            |
+| 1   | Les courbes elliptiques  | [Les-courbes-elliptiques](https://github.com/jobiyax/ecc-cbc-crypto/wiki/Les-courbes-elliptiques) |
+| 2   | L'échange de clé ECDH    | [L-echange-de-cle-ECDH](https://github.com/jobiyax/ecc-cbc-crypto/wiki/L-echange-de-cle-ECDH)     |
+| 3   | Le mode CBC              | [Le-mode-CBC](https://github.com/jobiyax/ecc-cbc-crypto/wiki/Le-mode-CBC)                         |
+| 4   | Exemple complet de A à Z | [Exemple-complet](https://github.com/jobiyax/ecc-cbc-crypto/wiki/Exemple-complet)                 |
 
 ## Installation
 
