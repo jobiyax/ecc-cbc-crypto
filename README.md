@@ -16,7 +16,6 @@
 ## Sommaire
 
 - [Fonctionnalités](#fonctionnalités)
-  - [Schéma d'ensemble](#schéma-densemble)
 - [Documentation](#documentation)
 - [Installation](#installation)
   - [Prérequis](#prérequis)
@@ -34,19 +33,6 @@
 - Exemple complet avec calculs numériques vérifiables
 - Affichage détaillé des 9 étapes (binaire, XOR, blocs, IV)
 - Vérification automatique par déchiffrement à la fin
-
-### Schéma d'ensemble
-
-```mermaid
-flowchart LR
-    subgraph ECC["1. Échanger une clé (ECC + ECDH)"]
-        A["Alice et Bob"] -->|"échange de clés publiques"| K["Clé secrète commune K"]
-    end
-    subgraph CBC["2. Chiffrer le texte (CBC)"]
-        M["Texte clair"] -->|"découpage en blocs + XOR"| C["Texte chiffré"]
-    end
-    K --> CBC
-```
 
 ## Documentation
 
