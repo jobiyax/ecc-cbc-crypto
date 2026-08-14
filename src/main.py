@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from math import isqrt
 from os import urandom
+from pathlib import Path
 
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
@@ -62,6 +63,17 @@ def is_prime(n: int) -> bool:
 
 def to_bin(data: bytes) -> str:
     return " ".join(f"{b:08b}" for b in data)
+
+
+OUT = Path("output")
+
+
+def save_binary(name: str, content: str) -> Path:
+    """Écrit le binaire lisible dans output/ et retourne son chemin."""
+    OUT.mkdir(exist_ok=True)
+    path = OUT / f"{name}.txt"
+    path.write_text(content + "\n", encoding="utf-8")
+    return path
 
 
 def number_to_bytes(n: int) -> bytes:
@@ -204,26 +216,33 @@ def main() -> None:
     key = ec_to_cbc_key(alice_shared)
     iv = urandom(cfg.block_size)
     print(f"K_x = {key}")
-    print(f"IV  = {to_bin(iv)}")
+    print(f"IV  -> {save_binary('iv', to_bin(iv))}")
 
     print("\n== Étape 7 : payload en blocs binaires ==")
-    print(f"Payload binaire : {to_bin(payload)}")
+    print(f"Payload binaire -> {save_binary('payload', to_bin(payload))}")
     plain = pad(payload, cfg.block_size)
     blocks = split_blocks(plain, cfg.block_size)
-    for i, block in enumerate(blocks, start=1):
-        print(f"P_{i} = {to_bin(block)}")
+    blocks_text = "\n".join(
+        f"P_{i} = {to_bin(block)}" for i, block in enumerate(blocks, start=1)
+    )
+    print(f"Blocs P_i -> {save_binary('blocks', blocks_text)}")
 
     print("\n== Étape 8 : mode CBC ==")
     cipher = cbc_encrypt(blocks, key, iv)
-    for i, block in enumerate(blocks, start=1):
-        xored = xor_bytes(block, iv if i == 1 else cipher[i - 2])
-        label = "P_1 XOR IV" if i == 1 else f"P_{i} XOR C_{i - 1}"
-        print(f"{label} = {to_bin(xored)}")
-        print(f"C_{i} = E_{key}(...) = {to_bin(cipher[i - 1])}")
+    xors_text = "\n".join(
+        f"P_{i} XOR {'IV' if i == 1 else f'C_{i - 1}'} = {to_bin(xor_bytes(block, iv if i == 1 else cipher[i - 2]))}"
+        for i, block in enumerate(blocks, start=1)
+    )
+    ciphers_text = "\n".join(
+        f"C_{i} = E_{key}(...) = {to_bin(block)}"
+        for i, block in enumerate(cipher, start=1)
+    )
+    print(f"XOR -> {save_binary('xor', xors_text)}")
+    print(f"C_i -> {save_binary('cipher_blocks', ciphers_text)}")
 
     print("\n== Étape 9 : texte chiffré ==")
     ciphertext = b"".join(cipher)
-    print(f"C = {to_bin(ciphertext)}")
+    print(f"C -> {save_binary('ciphertext', to_bin(ciphertext))}")
 
     print("\n== Déchiffrement (vérification) ==")
     recovered = unpad(b"".join(cbc_decrypt(cipher, key, iv)))
