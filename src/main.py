@@ -220,9 +220,14 @@ def main() -> None:
         cfg = ask_config(payload=False)
         plain = decrypt_files(cfg)
         try:
-            print(f"\nDéchiffré : {plain.decode()}")
+            readable = plain.decode()
         except UnicodeDecodeError:
-            print(f"\nDéchiffré : {bytes_to_number(plain)}")
+            readable = str(bytes_to_number(plain))
+        OUT.mkdir(exist_ok=True)
+        path = OUT / "plain.txt"
+        path.write_text(readable + "\n", encoding="utf-8")
+        print(f"\nDéchiffré : {readable}")
+        print(f"Clair -> {path}")
         return
 
     cfg = ask_config()
