@@ -78,7 +78,12 @@ Lancez le programme
 uv run python src/main.py
 ```
 
-Le CLI vous demande successivement
+Le CLI demande d'abord le **mode** :
+
+1. `c` — chiffrement (défaut)
+2. `d` — déchiffrement de `output/ciphertext.txt`
+
+### Chiffrement
 
 1. `dA` (clé privée d'Alice)
 2. `dB` (clé privée de Bob)
@@ -87,18 +92,26 @@ Le CLI vous demande successivement
 
 Chaque champ affiche sa valeur par défaut entre crochets. **Entrée** la valide.
 
+### Déchiffrement
+
+Saisissez le même `dA`, `dB` et les mêmes paramètres de courbe que lors du chiffrement
+(la clé en dérive via l'ECDH). Le résultat est affiché en console et écrit dans
+`output/plain.txt`. Si le contenu n'est pas du texte, il est interprété comme un
+nombre entier.
+
 ### Fichiers de sortie
 
 Les représentations binaires ne sont plus affichées en console mais écrites dans le dossier `output/` (créé automatiquement, et ignoré par git) :
 
-| Fichier             | Contenu                   |
-| ------------------- | ------------------------- |
-| `iv.txt`            | IV en binaire             |
-| `payload.txt`       | Payload binaire           |
-| `blocks.txt`        | Blocs `P_i` après padding |
-| `xor.txt`           | Résultats `P_i XOR` (CBC) |
-| `cipher_blocks.txt` | Blocs chiffrés `C_i`      |
-| `ciphertext.txt`    | Texte chiffré complet     |
+| Fichier             | Contenu                      |
+| ------------------- | ---------------------------- |
+| `iv.txt`            | IV en binaire                |
+| `payload.txt`       | Payload binaire              |
+| `blocks.txt`        | Blocs `P_i` après padding    |
+| `xor.txt`           | Résultats `P_i XOR` (CBC)    |
+| `cipher_blocks.txt` | Blocs chiffrés `C_i`         |
+| `ciphertext.txt`    | Texte chiffré complet        |
+| `plain.txt`         | Clair déchiffré _(mode `d`)_ |
 
 La console n'affiche que les valeurs lisibles (courbe, clés, point partagé, chemins des fichiers) et la vérification finale du déchiffrement.
 
