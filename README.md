@@ -31,7 +31,7 @@
 - Chiffrement symétrique en mode CBC, bloc par bloc (padding PKCS#7)
 - Saisie de **texte libre** (lettres, chiffres, caractères spéciaux, espaces compris)
 - Exemple complet avec calculs numériques vérifiables
-- Affichage détaillé des 9 étapes (binaire, XOR, blocs, IV)
+- Binaire détaillé exporté dans un dossier `output/` (IV, payload, blocs, XOR, chiffré) pour garder la console lisible
 - Vérification automatique par déchiffrement à la fin
 
 ## Documentation
@@ -65,7 +65,7 @@ uv --version
 ```bash
 git clone https://github.com/jobiyax/ecc-cbc-crypto.git
 cd ecc-cbc-crypto
-uv sync  # installe les dépendances + dépendances de dev dans .venv
+uv sync  # installe les dépendances
 ```
 
 > Sans uv, utilisez `python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"`
@@ -87,18 +87,33 @@ Le CLI vous demande successivement
 
 Chaque champ affiche sa valeur par défaut entre crochets. **Entrée** la valide.
 
+### Fichiers de sortie
+
+Les représentations binaires ne sont plus affichées en console mais écrites dans le dossier `output/` (créé automatiquement, et ignoré par git) :
+
+| Fichier             | Contenu                   |
+| ------------------- | ------------------------- |
+| `iv.txt`            | IV en binaire             |
+| `payload.txt`       | Payload binaire           |
+| `blocks.txt`        | Blocs `P_i` après padding |
+| `xor.txt`           | Résultats `P_i XOR` (CBC) |
+| `cipher_blocks.txt` | Blocs chiffrés `C_i`      |
+| `ciphertext.txt`    | Texte chiffré complet     |
+
+La console n'affiche que les valeurs lisibles (courbe, clés, point partagé, chemins des fichiers) et la vérification finale du déchiffrement.
+
 ### Tests
 
 ```bash
-uv run pytest  # lance toute la suite
-uv run pytest -v  # avec le détail de chaque test
+uv run pytest  # toute la suite
+uv run pytest -v  # détail de chaque test
 ```
 
-### Qualité du code
+## Qualité du code
 
 ```bash
-uv run ruff check .  # lint (vérifie le style et les erreurs)
-uv run ruff format .  # format (reformate automatiquement le code)
+uv run ruff check .  # lint
+uv run ruff format .  # format
 ```
 
 ## Licence
