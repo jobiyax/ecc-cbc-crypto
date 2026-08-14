@@ -11,12 +11,15 @@ from main import (
     ask_config,
     ask_payload,
     bytes_to_number,
+    decrypt_files,
     find_generator,
     french_error,
+    from_bin,
     is_prime,
     number_to_bytes,
     order,
     payload_bytes,
+    to_bin,
 )
 
 ENGLISH = re.compile(
@@ -100,6 +103,26 @@ def test_config_accepts_number_payload() -> None:
 def test_config_rejects_negative_number() -> None:
     with pytest.raises(ValidationError):
         Config(p=23, a=1, b=1, dA=5, dB=7, number=-1, block_size=4)
+
+
+def test_to_bin_from_bin_round_trip() -> None:
+    data = bytes([14, 150, 80, 85, 0, 255])
+    assert from_bin(to_bin(data)) == data
+
+
+def test_decrypt_files_round_trip(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr("main.OUT", tmp_path)
+    curve = ECCurve(p=23, a=1, b=1)
+    g = find_generator(curve, dA=5, dB=7)
+    _, bob_public = keypair(curve, g, 7)
+    key = shared_secret(curve, 5, bob_public).x
+    iv = bytes([14, 150, 80, 85])
+    cipher = b"".join(cbc_encrypt(split_blocks(pad(b"BONJOUR", 4), 4), key, iv))
+    (tmp_path / "iv.txt").write_text(to_bin(iv) + "\n", encoding="utf-8")
+    (tmp_path / "ciphertext.txt").write_text(to_bin(cipher) + "\n", encoding="utf-8")
+    assert (
+        decrypt_files(Config(dA=5, dB=7, message="BONJOUR", block_size=4)) == b"BONJOUR"
+    )
 
 
 def test_number_to_bytes_round_trip() -> None:

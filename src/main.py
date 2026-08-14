@@ -65,6 +65,16 @@ def to_bin(data: bytes) -> str:
     return " ".join(f"{b:08b}" for b in data)
 
 
+def from_bin(binary_text: str) -> bytes:
+    """Inverse de `to_bin` : un texte binaire (ex. "00001110 10010110") vers des octets."""
+    return bytes(int(b, 2) for b in binary_text.split())
+
+
+def load_binary(path: Path) -> bytes:
+    """Lit un fichier de `output/` au format de `to_bin` et le convertit en octets."""
+    return from_bin(path.read_text().strip())
+
+
 OUT = Path("output")
 
 
@@ -142,13 +152,14 @@ def ask_advanced() -> bool:
     return raw in ("o", "oui", "yes", "y")
 
 
-def ask_config() -> Config:
-    """3 saisies utiles (dA, dB, payload) ; p/a/b et taille de bloc en défauts modifiables."""
+def ask_config(payload: bool = True) -> Config:
+    """Saisit la config ; `payload=False` saute la question du texte (mode déchiffrement)."""
     while True:
         values: dict[str, str | int] = {}
         for name in ("dA", "dB"):
             values[name] = prompt_int(name)
-        values.update(ask_payload())
+        if payload:
+            values.update(ask_payload())
         if ask_advanced():
             for name in ("p", "a", "b", "block_size"):
                 values[name] = prompt_int(name)
@@ -184,6 +195,19 @@ def find_generator(curve: ECCurve, dA: int, dB: int) -> ECPoint:
     raise ValueError("aucun point d'ordre > max(dA, dB) trouvé sur cette courbe")
 
 
+def decrypt_files(cfg: Config) -> bytes:
+    """Déchiffre output/ciphertext.txt : clé dérivée de l'ECDH, IV lu depuis output/iv.txt."""
+    curve = ECCurve(p=cfg.p, a=cfg.a, b=cfg.b)
+    generator = find_generator(curve, cfg.dA, cfg.dB)
+    _, bob_public = keypair(curve, generator, private=cfg.dB)
+    key = shared_secret(curve, private=cfg.dA, peer_public=bob_public).x
+    iv = load_binary(OUT / "iv.txt")
+    ciphertext = load_binary(OUT / "ciphertext.txt")
+    return unpad(
+        b"".join(cbc_decrypt(split_blocks(ciphertext, cfg.block_size), key, iv))
+    )
+
+
 def payload_bytes(cfg: Config) -> tuple[str, bytes]:
     """Retourne (type, octets du payload) : 'text' ou 'number'."""
     if cfg.number is not None:
@@ -192,6 +216,15 @@ def payload_bytes(cfg: Config) -> tuple[str, bytes]:
 
 
 def main() -> None:
+    if input("Chiffrer (c) ou déchiffrer (d) ? [c] : ").strip().lower().startswith("d"):
+        cfg = ask_config(payload=False)
+        plain = decrypt_files(cfg)
+        try:
+            print(f"\nDéchiffré : {plain.decode()}")
+        except UnicodeDecodeError:
+            print(f"\nDéchiffré : {bytes_to_number(plain)}")
+        return
+
     cfg = ask_config()
     payload_type, payload = payload_bytes(cfg)
 
@@ -255,5 +288,5 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
-    except ValueError as exc:
+    except (ValueError, FileNotFoundError) as exc:
         print(f"Erreur : {exc}")
