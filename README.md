@@ -8,9 +8,9 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/python-3.14-inactive?style=flat-square" alt="Python 3.14">
-  <img src="https://img.shields.io/badge/deps-pydantic-inactive?style=flat-square" alt="Pydantic">
+  <img src="https://img.shields.io/badge/deps-rich%2Bquestionary-inactive?style=flat-square" alt="Rich + questionary">
   <img src="https://img.shields.io/badge/license-MIT-inactive?style=flat-square" alt="Licence MIT">
-  <img src="https://img.shields.io/badge/tests-37%20passing-inactive?style=flat-square" alt="37 tests">
+  <img src="https://img.shields.io/badge/tests-39%20passing-inactive?style=flat-square" alt="39 tests">
 </p>
 
 ## Sommaire
@@ -30,6 +30,8 @@
 - Échange de clé sécurisé (ECDH) sur courbe elliptique, pas à pas
 - Chiffrement symétrique en mode CBC, bloc par bloc (padding PKCS#7)
 - Saisie de **texte libre** (lettres, chiffres, caractères spéciaux, espaces compris)
+- Saisies **validées en direct** : une entrée invalide est refusée immédiatement, message en français
+- **Mode sélectionnable** (Chiffrer / Déchiffrer) au lieu de taper `c`/`d`
 - Exemple complet avec calculs numériques vérifiables
 - Binaire détaillé exporté dans un dossier `output/` (IV, payload, blocs, XOR, chiffré) pour garder la console lisible
 - Vérification automatique par déchiffrement à la fin
@@ -78,19 +80,20 @@ Lancez le programme
 uv run python src/main.py
 ```
 
-Le CLI demande d'abord le **mode** :
+Le CLI demande d'abord le **mode** dans une liste de sélection (flèches ↑/↓, **Entrée** pour valider) :
 
-1. `c` — chiffrement (défaut)
-2. `d` — déchiffrement de `output/ciphertext.txt`
+1. **Chiffrer** (défaut)
+2. **Déchiffrer** de `output/ciphertext.txt`
 
 ### Chiffrement
 
 1. `dA` (clé privée d'Alice)
 2. `dB` (clé privée de Bob)
 3. Le **texte à chiffrer** (texte, chiffres, accents, emojis, espaces…)
-4. La personnalisation de `p/a/b` et de la taille de bloc _(optionnel)_
+4. La personnalisation de `p/a/b` et de la taille de bloc _(question oui/non)_
 
-Chaque champ affiche sa valeur par défaut entre crochets. **Entrée** la valide.
+Chaque champ pré-affiche sa valeur par défaut.
+invalide est refusée immédiatement avec un message en français sous le champ.
 
 ### Déchiffrement
 
@@ -113,7 +116,8 @@ Les représentations binaires ne sont plus affichées en console mais écrites d
 | `ciphertext.txt`    | Texte chiffré complet        |
 | `plain.txt`         | Clair déchiffré _(mode `d`)_ |
 
-La console n'affiche que les valeurs lisibles (courbe, clés, point partagé, chemins des fichiers) et la vérification finale du déchiffrement.
+Les chemins des fichiers écrits dans `output/` sont récapitulés en fin de chiffrement,
+suivis de la vérification finale du déchiffrement.
 
 ### Tests
 
