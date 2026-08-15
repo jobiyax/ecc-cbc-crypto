@@ -27,21 +27,33 @@ ENGLISH = re.compile(
 )
 
 
+class _FakeQuestion:
+    def __init__(self, value: str) -> None:
+        self._value = value
+
+    def ask(self) -> str:
+        return self._value
+
+
 def test_ask_config_retries_on_invalid_input(monkeypatch) -> None:
-    answers = iter(["abc", "5", "7", "  Héllo ! @café #123  ", "n"])
-    monkeypatch.setattr("builtins.input", lambda _: next(answers))
+    answers = iter(["abc", "5", "7", "  Héllo ! @café #123  "])
+    monkeypatch.setattr("main.ask_text", lambda *a, **k: next(answers))
+    monkeypatch.setattr("main.ask_confirm", lambda *a, **k: False)
     cfg = ask_config()
     assert (cfg.dA, cfg.dB) == (5, 7)
     assert cfg.message == "  Héllo ! @café #123  "
 
 
 def test_ask_payload_keeps_special_characters_and_spaces(monkeypatch) -> None:
-    monkeypatch.setattr("builtins.input", lambda _: "  café 123 ! @# [~]  ")
+    monkeypatch.setattr(
+        "questionary.text",
+        lambda *a, **k: _FakeQuestion("  café 123 ! @# [~]  "),
+    )
     assert ask_payload() == {"message": "  café 123 ! @# [~]  "}
 
 
 def test_ask_payload_empty_uses_default(monkeypatch) -> None:
-    monkeypatch.setattr("builtins.input", lambda _: "")
+    monkeypatch.setattr("questionary.text", lambda *a, **k: _FakeQuestion(""))
     assert ask_payload() == {"message": "BONJOUR"}
 
 
