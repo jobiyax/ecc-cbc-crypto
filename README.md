@@ -8,7 +8,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/python-3.14-inactive?style=flat-square" alt="Python 3.14">
-  <img src="https://img.shields.io/badge/deps-rich%2Bquestionary-inactive?style=flat-square" alt="Rich + questionary">
+  <img src="https://img.shields.io/badge/deps-pydantic%2Bquestionary-inactive?style=flat-square" alt="Pydantic + questionary">
   <img src="https://img.shields.io/badge/license-MIT-inactive?style=flat-square" alt="Licence MIT">
   <img src="https://img.shields.io/badge/tests-39%20passing-inactive?style=flat-square" alt="39 tests">
 </p>
@@ -92,8 +92,8 @@ Le CLI demande d'abord le **mode** dans une liste de sélection (flèches ↑/�
 3. Le **texte à chiffrer** (texte, chiffres, accents, emojis, espaces…)
 4. La personnalisation de `p/a/b` et de la taille de bloc _(question oui/non)_
 
-Chaque champ pré-affiche sa valeur par défaut.
-invalide est refusée immédiatement avec un message en français sous le champ.
+Chaque champ pré-affiche sa valeur par défaut. Une entrée invalide est refusée
+immédiatement avec un message sous le champ.
 
 ### Déchiffrement
 
