@@ -7,54 +7,27 @@ from pathlib import Path
 import questionary
 from pydantic import BaseModel, Field, ValidationError, field_validator
 from questionary import Choice, Style
-from rich import box
-from rich.console import Console
-from rich.panel import Panel
-from rich.table import Table
-from rich.theme import Theme
 
-HACK_THEME = Theme(
-    {
-        "frame": "#8f8f8f",
-        "title": "#ffffff",
-        "value": "#cfcfcf",
-        "dim": "#6f6f6f",
-        "alert": "bold white",
-    }
-)
-console = Console(theme=HACK_THEME, style="white")
-
-PROMPT_STYLE = Style(
+PLAIN_STYLE = Style(
     [
-        ("qmark", "fg:#ffffff bold"),
-        ("question", "fg:#cfcfcf"),
-        ("answer", "fg:#ffffff bold"),
-        ("pointer", "fg:#ffffff bold"),
-        ("highlighted", "fg:#ffffff bold"),
-        ("selected", "fg:#cfcfcf"),
+        ("qmark", "fg:default bold"),
+        ("question", "fg:default"),
+        ("answer", "fg:default bold"),
+        ("pointer", "fg:default bold"),
+        ("highlighted", "fg:default bold"),
+        ("selected", "fg:default"),
     ]
 )
 
 
-def hack_panel(title: str, body: str) -> Panel:
-    """Cadre façon outil de hacking : bordure grise, titre blanc."""
-    return Panel(
-        body,
-        title=f"[bold title]{title}[/bold title]",
-        border_style="frame",
-        box=box.HEAVY,
-    )
+def banner() -> str:
+    return "ECC + ECDH + CBC — chiffrez vos secrets"
 
 
-def banner() -> Panel:
-    return Panel(
-        "[value]ECC[/value] [dim]+[/dim] [value]ECDH[/value] "
-        "[dim]+[/dim] [value]CBC[/value]\n"
-        "[dim]chiffrez vos secrets[/dim]",
-        title="[bold title] ECC-CBC [/bold title]",
-        border_style="frame",
-        box=box.DOUBLE,
-    )
+def step(title: str, body: str) -> None:
+    """Affiche une étape en texte brut, sans couleur ni encadré."""
+    print(f"\n== {title} ==")
+    print(body)
 
 
 from cbc import cbc_decrypt, cbc_encrypt, pad, split_blocks, unpad, xor_bytes
@@ -167,7 +140,7 @@ def prompt_int(name: str) -> int:
         try:
             return int(raw)
         except ValueError:
-            console.print(f"[alert]![/alert] {label} : doit être un entier")
+            print(f"! {label} : doit être un entier")
 
 
 ERROR_TYPES = {
@@ -199,13 +172,13 @@ def french_error(error: dict) -> str:
 def ask_text(label: str, default: str = "", validate=None) -> str:
     """Saisie questionary ; entrée vide ou Ctrl+C -> valeur par défaut."""
     value = questionary.text(
-        label, default=default, validate=validate, style=PROMPT_STYLE
+        label, default=default, validate=validate, style=PLAIN_STYLE
     ).ask()
     return value if value else default
 
 
 def ask_confirm(message: str, default: bool = False) -> bool:
-    return questionary.confirm(message, default=default, style=PROMPT_STYLE).ask()
+    return questionary.confirm(message, default=default, style=PLAIN_STYLE).ask()
 
 
 def ask_select(message: str, choices: list[tuple[str, str]], default: str) -> str:
@@ -213,7 +186,7 @@ def ask_select(message: str, choices: list[tuple[str, str]], default: str) -> st
         message,
         choices=[Choice(title, value) for title, value in choices],
         default=default,
-        style=PROMPT_STYLE,
+        style=PLAIN_STYLE,
     ).ask()
 
 
@@ -237,8 +210,8 @@ def ask_config(payload: bool = True) -> Config:
             return Config(**values)
         except ValidationError as exc:
             for error in exc.errors():
-                console.print(f"[alert]![/alert] {french_error(error)}")
-            console.print("Ressaisissez les valeurs.")
+                print(f"! {french_error(error)}")
+            print("Ressaisissez les valeurs.")
 
 
 def order(point: ECPoint) -> int:
@@ -286,7 +259,7 @@ def payload_bytes(cfg: Config) -> tuple[str, bytes]:
 
 
 def main() -> None:
-    console.print(banner())
+    print(banner())
     mode = ask_select(
         "Que voulez-vous faire ?",
         choices=[("Chiffrer", "c"), ("Déchiffrer", "d")],
@@ -302,9 +275,7 @@ def main() -> None:
         OUT.mkdir(exist_ok=True)
         path = OUT / "plain.txt"
         path.write_text(readable + "\n", encoding="utf-8")
-        console.print(
-            hack_panel("DÉCHIFFRÉ", f"{readable}\nClair -> [value]{path}[/value]")
-        )
+        step("DÉCHIFFRÉ", f"{readable}\nClair -> {path}")
         return
 
     cfg = ask_config()
@@ -312,46 +283,32 @@ def main() -> None:
 
     curve = ECCurve(p=cfg.p, a=cfg.a, b=cfg.b)
     generator = find_generator(curve, cfg.dA, cfg.dB)
-    console.print(
-        hack_panel(
-            "ÉTAPE 1/2 · COURBE ET GÉNÉRATEUR",
-            f"{curve} avec G = [value]{generator}[/value]",
-        )
-    )
+    step("ÉTAPE 1/2 · COURBE ET GÉNÉRATEUR", f"{curve} avec G = {generator}")
 
     _, alice_public = keypair(curve, generator, private=cfg.dA)
     _, bob_public = keypair(curve, generator, private=cfg.dB)
-    console.print(
-        hack_panel(
-            "ÉTAPE 3/4 · CLÉS PRIVÉES ET PUBLIQUES",
-            f"Q_A = {cfg.dA}G = [value]{alice_public}[/value]\n"
-            f"Q_B = {cfg.dB}G = [value]{bob_public}[/value]",
-        )
+    step(
+        "ÉTAPE 3/4 · CLÉS PRIVÉES ET PUBLIQUES",
+        f"Q_A = {cfg.dA}G = {alice_public}\nQ_B = {cfg.dB}G = {bob_public}",
     )
 
     alice_shared = shared_secret(curve, private=cfg.dA, peer_public=bob_public)
     bob_shared = shared_secret(curve, private=cfg.dB, peer_public=alice_public)
     assert alice_shared == bob_shared
-    console.print(
-        hack_panel(
-            "ÉTAPE 5 · ECDH -> POINT PARTAGÉ", f"K = [value]{alice_shared}[/value]"
-        )
-    )
+    step("ÉTAPE 5 · ECDH -> POINT PARTAGÉ", f"K = {alice_shared}")
 
     key = ec_to_cbc_key(alice_shared)
     iv = urandom(cfg.block_size)
-    console.print(hack_panel("ÉTAPE 6 · CLÉ CBC ET IV", f"K_x = [value]{key}[/value]"))
+    step("ÉTAPE 6 · CLÉ CBC ET IV", f"K_x = {key}")
 
     plain = pad(payload, cfg.block_size)
     blocks = split_blocks(plain, cfg.block_size)
     blocks_text = "\n".join(
         f"P_{i} = {to_bin(block)}" for i, block in enumerate(blocks, start=1)
     )
-    console.print(
-        hack_panel(
-            "ÉTAPE 7 · PAYLOAD EN BLOCS BINAIRES",
-            f"{len(blocks)} bloc(s) de {cfg.block_size} octets après padding PKCS#7",
-        )
+    step(
+        "ÉTAPE 7 · PAYLOAD EN BLOCS BINAIRES",
+        f"{len(blocks)} bloc(s) de {cfg.block_size} octets après padding PKCS#7",
     )
 
     cipher = cbc_encrypt(blocks, key, iv)
@@ -363,11 +320,9 @@ def main() -> None:
         f"C_{i} = E_{key}(...) = {to_bin(block)}"
         for i, block in enumerate(cipher, start=1)
     )
-    console.print(
-        hack_panel(
-            "ÉTAPE 8 · MODE CBC",
-            f"{len(cipher)} bloc(s) chiffré(s) : C_i = E_K(P_i XOR C_{{i-1}})",
-        )
+    step(
+        "ÉTAPE 8 · MODE CBC",
+        f"{len(cipher)} bloc(s) chiffré(s) : C_i = E_K(P_i XOR C_{{i-1}})",
     )
 
     ciphertext = b"".join(cipher)
@@ -379,33 +334,25 @@ def main() -> None:
         ("Blocs chiffrés C_i", save_binary("cipher_blocks", ciphers_text)),
         ("Texte chiffré C", save_binary("ciphertext", to_bin(ciphertext))),
     ]
-    table = Table(
-        title="[bold title] FICHIERS ÉCRITS DANS output/ [/bold title]",
-        border_style="frame",
-        header_style="title",
-        box=box.HEAVY,
+    step(
+        "FICHIERS ÉCRITS DANS output/",
+        "\n".join(f"{label}: {path}" for label, path in files),
     )
-    table.add_column("Contenu", style="white")
-    table.add_column("Fichier", style="value")
-    for label, path in files:
-        table.add_row(label, str(path))
-    console.print(table)
 
     recovered = unpad(b"".join(cbc_decrypt(cipher, key, iv)))
     if payload_type == "number":
         body = (
-            f"Déchiffré : [value]{bytes_to_number(recovered)}[/value] "
-            f"(doit être {cfg.number})"
+            f"Déchiffré : {bytes_to_number(recovered)} (doit être {cfg.number})"
         )
     else:
-        body = f"Déchiffré : [value]{recovered!r}[/value] (doit être {cfg.message!r})"
-    console.print(hack_panel("DÉCHIFFREMENT (VÉRIFICATION)", body))
+        body = f"Déchiffré : {recovered!r} (doit être {cfg.message!r})"
+    step("DÉCHIFFREMENT (VÉRIFICATION)", body)
 
 
 if __name__ == "__main__":
     try:
         main()
     except EOFError:
-        console.print("[alert]Saisie interrompue.[/alert]")
+        print("Saisie interrompue.")
     except (ValueError, FileNotFoundError) as exc:
-        console.print(f"[alert]Erreur :[/alert] {exc}")
+        print(f"Erreur : {exc}")
