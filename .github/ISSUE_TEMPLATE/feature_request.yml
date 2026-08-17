@@ -1,0 +1,21 @@
+name: "Feature Request"
+description: "Suggérer une fonctionnalité"
+title: "[FEATURE] "
+labels: ["enhancement"]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Décrivez votre idée.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Cas d'usage
+      description: Dans quel cas l'utiliser ?
+    validations:
+      required: false
