@@ -136,9 +136,9 @@ uv run ruff format .  # format
 
 ## Communauté
 
-- [CONTRIBUTING.md](CONTRIBUTING.md) — guide de contribution
-- [SECURITY.md](SECURITY.md) — politique de sécurité
-- [AGENTS.md](AGENTS.md) — conventions pour agents IA
+- [CONTRIBUTING.md](CONTRIBUTING.md) guide de contribution
+- [SECURITY.md](SECURITY.md) politique de sécurité
+- [AGENTS.md](AGENTS.md) conventions pour agents IA
 
 ## Licence
 
