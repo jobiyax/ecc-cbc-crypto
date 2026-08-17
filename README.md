@@ -139,9 +139,6 @@ uv run ruff format .  # format
 - [CONTRIBUTING.md](CONTRIBUTING.md) guide de contribution
 - [SECURITY.md](SECURITY.md) politique de sécurité
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) code de conduite
-- [AGENTS.md](AGENTS.md) conventions pour agents IA
-- [Issue Templates](.github/ISSUE_TEMPLATE/) templates d'issues
-- [PR Template](.github/PULL_REQUEST_TEMPLATE.md) template de pull request
 
 ## Licence
 
