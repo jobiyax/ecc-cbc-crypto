@@ -23,6 +23,7 @@
 - [Utilisation](#utilisation)
   - [Tests](#tests)
   - [Qualité du code](#qualité-du-code)
+- [Communauté](#communauté)
 - [Licence](#licence)
 
 ## Fonctionnalités
@@ -132,6 +133,12 @@ uv run pytest -v  # détail de chaque test
 uv run ruff check .  # lint
 uv run ruff format .  # format
 ```
+
+## Communauté
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) — guide de contribution
+- [SECURITY.md](SECURITY.md) — politique de sécurité
+- [AGENTS.md](AGENTS.md) — conventions pour agents IA
 
 ## Licence
 
