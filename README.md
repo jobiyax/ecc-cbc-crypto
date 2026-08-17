@@ -127,7 +127,7 @@ uv run pytest  # toute la suite
 uv run pytest -v  # détail de chaque test
 ```
 
-## Qualité du code
+### Qualité du code
 
 ```bash
 uv run ruff check .  # lint
