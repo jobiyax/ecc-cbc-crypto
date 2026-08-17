@@ -4,21 +4,16 @@ import pytest
 from pydantic import ValidationError
 
 from cbc import cbc_decrypt, cbc_encrypt, pad, split_blocks, unpad
+from config import Config, ask_config, ask_payload, french_error, is_prime
 from ecc import ECCurve
 from ecdh import keypair, shared_secret
-from main import (
-    Config,
-    ask_config,
-    ask_payload,
+from main import decrypt_files, payload_bytes
+from utils import (
     bytes_to_number,
-    decrypt_files,
     find_generator,
-    french_error,
     from_bin,
-    is_prime,
     number_to_bytes,
     order,
-    payload_bytes,
     to_bin,
 )
 
@@ -37,8 +32,8 @@ class _FakeQuestion:
 
 def test_ask_config_retries_on_invalid_input(monkeypatch) -> None:
     answers = iter(["abc", "5", "7", "  Héllo ! @café #123  "])
-    monkeypatch.setattr("main.ask_text", lambda *a, **k: next(answers))
-    monkeypatch.setattr("main.ask_confirm", lambda *a, **k: False)
+    monkeypatch.setattr("config.ask_text", lambda *a, **k: next(answers))
+    monkeypatch.setattr("config.ask_confirm", lambda *a, **k: False)
     cfg = ask_config()
     assert (cfg.dA, cfg.dB) == (5, 7)
     assert cfg.message == "  Héllo ! @café #123  "
