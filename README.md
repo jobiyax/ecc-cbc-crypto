@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  Cryptosystème hybride échange de clé ECDH sur courbe elliptique puis chiffrement symétrique en mode CBC en Python pur
+  Cryptosystème hybride échange de clé ECDH sur courbe elliptique puis chiffrement symétrique en mode CBC
 </p>
 
 <p align="center">
@@ -18,120 +18,69 @@
 - [Fonctionnalités](#fonctionnalités)
 - [Documentation](#documentation)
 - [Installation](#installation)
-  - [Prérequis](#prérequis)
-  - [Clonage et dépendances](#clonage-et-dépendances)
 - [Utilisation](#utilisation)
-  - [Tests](#tests)
-  - [Qualité du code](#qualité-du-code)
+- [Tests](#tests)
 - [Communauté](#communauté)
 - [Licence](#licence)
 
 ## Fonctionnalités
 
-- Échange de clé sécurisé (ECDH) sur courbe elliptique, pas à pas
-- Chiffrement symétrique en mode CBC, bloc par bloc (padding PKCS#7)
-- Saisie de **texte libre** (lettres, chiffres, caractères spéciaux, espaces compris)
-- Saisies **validées en direct** : une entrée invalide est refusée immédiatement, message en français
-- **Mode sélectionnable** (Chiffrer / Déchiffrer) au lieu de taper `c`/`d`
-- Exemple complet avec calculs numériques vérifiables
-- Binaire détaillé exporté dans un dossier `output/` (IV, payload, blocs, XOR, chiffré) pour garder la console lisible
-- Vérification automatique par déchiffrement à la fin
+- Échange de clé ECDH sur courbe elliptique
+- Chiffrement symétrique CBC (padding PKCS#7)
+- Saisie de texte libre avec validation en direct
+- Mode sélectionnable (Chiffrer / Déchiffrer)
+- Vérification automatique par déchiffrement
+- Détails binaires exportés dans `output/`
 
 ## Documentation
 
-Toutes les explications, les concepts et l'exemple de A à Z sont détaillés dans le [wiki du projet](https://github.com/jobiyax/ecc-cbc-crypto/wiki).
-
-| #   | Sujet                    | Lien                                                                                              |
-| --- | ------------------------ | ------------------------------------------------------------------------------------------------- |
-| 0   | Accueil                  | [Home](https://github.com/jobiyax/ecc-cbc-crypto/wiki)                                            |
-| 1   | Les courbes elliptiques  | [Les-courbes-elliptiques](https://github.com/jobiyax/ecc-cbc-crypto/wiki/Les-courbes-elliptiques) |
-| 2   | L'échange de clé ECDH    | [L-echange-de-cle-ECDH](https://github.com/jobiyax/ecc-cbc-crypto/wiki/L-echange-de-cle-ECDH)     |
-| 3   | Le mode CBC              | [Le-mode-CBC](https://github.com/jobiyax/ecc-cbc-crypto/wiki/Le-mode-CBC)                         |
-| 4   | Exemple complet de A à Z | [Exemple-complet](https://github.com/jobiyax/ecc-cbc-crypto/wiki/Exemple-complet)                 |
+Consultez le [wiki du projet](https://github.com/jobiyax/ecc-cbc-crypto/wiki) pour les explications complètes (courbes elliptiques, ECDH, CBC, exemple de A à Z).
 
 ## Installation
 
-### Prérequis
-
-- Python 3.14 ou plus
-- [uv](https://docs.astral.sh/uv/) (gestionnaire de paquets et d'environnement)
-
-Vérifier
-
-```bash
-python --version
-uv --version
-```
-
-### Clonage et dépendances
+Prérequis : Python 3.14+ et [uv](https://docs.astral.sh/uv/).
 
 ```bash
 git clone https://github.com/jobiyax/ecc-cbc-crypto.git
 cd ecc-cbc-crypto
-uv sync  # installe les dépendances
+uv sync # installe les dépendances
 ```
 
-> Sans uv, utilisez `python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"`
-
 ## Utilisation
-
-Lancez le programme
 
 ```bash
 uv run python src/main.py
 ```
 
-Le CLI demande d'abord le **mode** dans une liste de sélection (flèches ↑/↓, **Entrée** pour valider) :
+Le CLI demande le mode (Chiffrer / Déchiffrer), puis les clés `dA`, `dB` et le texte. Les paramètres de courbe (`p/a/b`, taille de bloc) sont personnalisables. Les entrées invalides sont rejetées immédiatement.
 
-1. **Chiffrer** (défaut)
-2. **Déchiffrer** de `output/ciphertext.txt`
-
-### Chiffrement
-
-1. `dA` (clé privée d'Alice)
-2. `dB` (clé privée de Bob)
-3. Le **texte à chiffrer** (texte, chiffres, accents, emojis, espaces…)
-4. La personnalisation de `p/a/b` et de la taille de bloc _(question oui/non)_
-
-Chaque champ pré-affiche sa valeur par défaut. Une entrée invalide est refusée
-immédiatement avec un message sous le champ.
-
-### Déchiffrement
-
-Saisissez le même `dA`, `dB` et les mêmes paramètres de courbe que lors du chiffrement
-(la clé en dérive via l'ECDH). Le résultat est affiché en console et écrit dans
-`output/plain.txt`. Si le contenu n'est pas du texte, il est interprété comme un
-nombre entier.
+En déchiffrement, saisissez les mêmes clés et paramètres que lors du chiffrement.
 
 ### Fichiers de sortie
 
-Les représentations binaires ne sont plus affichées en console mais écrites dans le dossier `output/` (créé automatiquement, et ignoré par git) :
+| Fichier             | Contenu                         |
+| ------------------- | ------------------------------- |
+| `iv.txt`            | IV en binaire                   |
+| `payload.txt`       | Payload binaire                 |
+| `blocks.txt`        | Blocs `P_i` après padding       |
+| `xor.txt`           | Résultats `P_i XOR` (CBC)       |
+| `cipher_blocks.txt` | Blocs chiffrés `C_i`            |
+| `ciphertext.txt`    | Texte chiffré complet           |
+| `plain.txt`         | Clair déchiffré (déchiffrement) |
 
-| Fichier             | Contenu                      |
-| ------------------- | ---------------------------- |
-| `iv.txt`            | IV en binaire                |
-| `payload.txt`       | Payload binaire              |
-| `blocks.txt`        | Blocs `P_i` après padding    |
-| `xor.txt`           | Résultats `P_i XOR` (CBC)    |
-| `cipher_blocks.txt` | Blocs chiffrés `C_i`         |
-| `ciphertext.txt`    | Texte chiffré complet        |
-| `plain.txt`         | Clair déchiffré _(mode `d`)_ |
-
-Les chemins des fichiers écrits dans `output/` sont récapitulés en fin de chiffrement,
-suivis de la vérification finale du déchiffrement.
-
-### Tests
+## Tests
 
 ```bash
-uv run pytest  # toute la suite
-uv run pytest -v  # détail de chaque test
+uv run pytest # toute la suite
+uv run pytest tests/test_cbc.py # un fichier
+uv run pytest -v # détail
 ```
 
 ### Qualité du code
 
 ```bash
-uv run ruff check .  # lint
-uv run ruff format .  # format
+uv run ruff check . # lint
+uv run ruff format . # format
 ```
 
 ## Communauté
