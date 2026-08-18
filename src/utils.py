@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ecc import ECCurve, ECPoint
+from .ecc import ECCurve, ECPoint
 
 OUT = Path("output")
 

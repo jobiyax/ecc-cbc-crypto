@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from os import urandom
 
-from cbc import cbc_decrypt, cbc_encrypt, pad, split_blocks, unpad, xor_bytes
-from config import Config, ask_config, ask_select
-from ecc import ECCurve
-from ecdh import keypair, shared_secret
-from utils import (
+from .cbc import cbc_decrypt, cbc_encrypt, pad, split_blocks, unpad, xor_bytes
+from .config import Config, ask_config, ask_select
+from .ecc import ECCurve
+from .ecdh import keypair, shared_secret
+from .utils import (
     OUT,
     bytes_to_number,
     ec_to_cbc_key,

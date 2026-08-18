@@ -3,12 +3,12 @@ import re
 import pytest
 from pydantic import ValidationError
 
-from cbc import cbc_decrypt, cbc_encrypt, pad, split_blocks, unpad
-from config import Config, ask_config, ask_payload, french_error, is_prime
-from ecc import ECCurve
-from ecdh import keypair, shared_secret
-from main import decrypt_files, payload_bytes
-from utils import (
+from src.cbc import cbc_decrypt, cbc_encrypt, pad, split_blocks, unpad
+from src.config import Config, ask_config, ask_payload, french_error, is_prime
+from src.ecc import ECCurve
+from src.ecdh import keypair, shared_secret
+from src.main import decrypt_files, payload_bytes
+from src.utils import (
     bytes_to_number,
     find_generator,
     from_bin,
@@ -32,8 +32,8 @@ class _FakeQuestion:
 
 def test_ask_config_retries_on_invalid_input(monkeypatch) -> None:
     answers = iter(["abc", "5", "7", "  Héllo ! @café #123  "])
-    monkeypatch.setattr("config.ask_text", lambda *a, **k: next(answers))
-    monkeypatch.setattr("config.ask_confirm", lambda *a, **k: False)
+    monkeypatch.setattr("src.config.ask_text", lambda *a, **k: next(answers))
+    monkeypatch.setattr("src.config.ask_confirm", lambda *a, **k: False)
     cfg = ask_config()
     assert (cfg.dA, cfg.dB) == (5, 7)
     assert cfg.message == "  Héllo ! @café #123  "
@@ -118,7 +118,7 @@ def test_to_bin_from_bin_round_trip() -> None:
 
 
 def test_decrypt_files_round_trip(tmp_path, monkeypatch) -> None:
-    monkeypatch.setattr("main.OUT", tmp_path)
+    monkeypatch.setattr("src.main.OUT", tmp_path)
     curve = ECCurve(p=23, a=1, b=1)
     g = find_generator(curve, dA=5, dB=7)
     _, bob_public = keypair(curve, g, 7)

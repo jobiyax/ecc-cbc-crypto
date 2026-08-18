@@ -1,4 +1,4 @@
-from ecc import ECCurve, ECPoint
+from .ecc import ECCurve, ECPoint
 
 
 def keypair(curve: ECCurve, generator: ECPoint, private: int) -> tuple[int, ECPoint]:

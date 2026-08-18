@@ -1,5 +1,5 @@
-from ecc import ECCurve
-from ecdh import keypair, shared_secret
+from src.ecc import ECCurve
+from src.ecdh import keypair, shared_secret
 
 CURVE = ECCurve(p=23, a=1, b=1)
 GENERATOR = CURVE.point(3, 10)

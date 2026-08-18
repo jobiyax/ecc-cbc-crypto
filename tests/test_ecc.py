@@ -1,6 +1,6 @@
 import pytest
 
-from ecc import ECCurve
+from src.ecc import ECCurve
 
 CURVE = ECCurve(p=23, a=1, b=1)
 G = CURVE.point(3, 10)

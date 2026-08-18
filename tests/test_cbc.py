@@ -1,4 +1,4 @@
-from cbc import (
+from src.cbc import (
     cbc_decrypt,
     cbc_encrypt,
     decrypt_block,
