@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/license-MIT-inactive?style=flat-square" alt="Licence MIT">
   <img src="https://img.shields.io/badge/tests-39%20passing-inactive?style=flat-square" alt="39 tests">
   <a href="https://github.com/jobiyax/ecc-cbc-crypto/releases/tag/v0.1.0">
-    <img src="https://img.shields.io/badge/t%C3%A9l%C3%A9charger-v0.1.0-4162a6?style=flat-square" alt="Télécharger v0.1.0">
+    <img src="https://img.shields.io/badge/t%C3%A9l%C3%A9charger-v0.1.0-inactive?style=flat-square" alt="Télécharger v0.1.0">
   </a>
 </p>
 
