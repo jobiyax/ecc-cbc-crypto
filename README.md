@@ -19,10 +19,8 @@
 ## Sommaire
 
 - [Fonctionnalités](#fonctionnalités)
-- [Documentation](#documentation)
 - [Installation](#installation)
 - [Utilisation](#utilisation)
-- [Tests](#tests)
 - [Communauté](#communauté)
 - [Licence](#licence)
 
@@ -35,7 +33,7 @@
 - Vérification automatique par déchiffrement
 - Détails binaires exportés dans `output/`
 
-## Documentation
+### Documentation
 
 Consultez le [wiki du projet](https://github.com/jobiyax/ecc-cbc-crypto/wiki) pour les explications complètes (courbes elliptiques, ECDH, CBC, exemple de A à Z).
 
@@ -71,7 +69,7 @@ En déchiffrement, saisissez les mêmes clés et paramètres que lors du chiffre
 | `ciphertext.txt`    | Texte chiffré complet           |
 | `plain.txt`         | Clair déchiffré (déchiffrement) |
 
-## Tests
+### Tests
 
 ```bash
 uv run pytest # toute la suite
