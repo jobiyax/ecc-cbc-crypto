@@ -41,16 +41,34 @@ Consultez le [wiki du projet](https://github.com/jobiyax/ecc-cbc-crypto/wiki) po
 
 Prérequis : Python 3.14+ et [uv](https://docs.astral.sh/uv/).
 
+### Depuis le code source
+
 ```bash
 git clone https://github.com/jobiyax/ecc-cbc-crypto.git
 cd ecc-cbc-crypto
 uv sync # installe les dépendances
 ```
 
+### Depuis le fichier .whl
+
+Téléchargez le fichier `.whl` depuis la [v0.1.0](https://github.com/jobiyax/ecc-cbc-crypto/releases/tag/v0.1.0) :
+
+```bash
+uv pip install ecc_cbc_crypto-0.1.0-py3-none-any.whl
+```
+
 ## Utilisation
+
+### Depuis le code source
 
 ```bash
 uv run python src/main.py
+```
+
+### Depuis le package installé
+
+```bash
+ecc-cbc-crypto
 ```
 
 Le CLI demande le mode (Chiffrer / Déchiffrer), puis les clés `dA`, `dB` et le texte. Les paramètres de courbe (`p/a/b`, taille de bloc) sont personnalisables. Les entrées invalides sont rejetées immédiatement.
