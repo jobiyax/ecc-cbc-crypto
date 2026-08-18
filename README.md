@@ -26,7 +26,7 @@
 ## Fonctionnalités
 
 - Échange de clé ECDH sur courbe elliptique
-- Chiffrement symétrique CBC (padding PKCS#7)
+- Chiffrement symétrique CBC
 - Saisie de texte libre avec validation en direct
 - Mode sélectionnable (Chiffrer / Déchiffrer)
 - Vérification automatique par déchiffrement
